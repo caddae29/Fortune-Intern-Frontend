@@ -1,0 +1,87 @@
+import { useState } from "react";
+import AuthPage from "./pages/AuthPage";
+import MainApp from "./pages/MainApp";
+import AIChatWidget from "./components/AIChatWidget";
+import LandingPage from "./pages/LandingPage";
+
+export type AppUser = {
+  name: string;
+  email: string;
+  school: string;
+  major: string;
+  avatar: string;
+  isAdmin: boolean;
+  verified: boolean;
+  role: "student";
+};
+
+export type AppPage =
+  | "home"
+  | "dashboard"
+  | "announcements"
+  | "programs"
+  | "apply"
+  | "profile"
+  | "admin";
+
+export default function App() {
+  const [user, setUser] = useState<AppUser | null>(null);
+  const [showOTP, setShowOTP] = useState(false);
+  const [pendingUser, setPendingUser] = useState<AppUser | null>(null);
+  const [authScreen, setAuthScreen] = useState<
+    "landing" | "login" | "register"
+  >("landing");
+
+  const handleRegister = (userData: AppUser) => {
+    setPendingUser(userData);
+    setShowOTP(true);
+  };
+
+  const handleOTPVerified = () => {
+    if (pendingUser) {
+      setUser({ ...pendingUser, verified: true });
+      setPendingUser(null);
+      setShowOTP(false);
+    }
+  };
+
+  const handleLogin = (userData: AppUser) => {
+    setUser(userData);
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setPendingUser(null);
+    setShowOTP(false);
+    setAuthScreen("login");
+  };
+
+  if (!user) {
+    if (authScreen === "landing") {
+      return (
+        <LandingPage
+          onStudentPortal={(mode = "login") => setAuthScreen(mode)}
+        />
+      );
+    }
+    return (
+      <AuthPage
+        key={authScreen}
+        initialMode={authScreen}
+        onBack={() => setAuthScreen("landing")}
+        onLogin={handleLogin}
+        onRegister={handleRegister}
+        showOTP={showOTP}
+        onOTPVerified={handleOTPVerified}
+        pendingEmail={pendingUser?.email || ""}
+      />
+    );
+  }
+
+  return (
+    <>
+      <MainApp user={user} onLogout={handleLogout} />
+      <AIChatWidget user={user} />
+    </>
+  );
+}

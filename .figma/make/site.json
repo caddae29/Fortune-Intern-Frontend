@@ -1,0 +1,10 @@
+{
+  "description": "Connect students with job opportunities and companies through automated application tracking, AI assistance, and seamless payment integration.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
