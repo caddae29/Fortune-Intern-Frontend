@@ -3,6 +3,7 @@ import type { AppUser, AppPage } from "../App";
 import logo from "../assets/attach1.png";
 import HomePage from "./HomePage";
 import DashboardPage from "./DashboardPage";
+import ApplicationsPage from "./ApplicationsPage";
 import AnnouncementsPage from "./AnnouncementsPage";
 import ProgramsPage from "./ProgramsPage";
 import ApplyPage from "./ApplyPage";
@@ -37,6 +38,18 @@ const navItems = [
         strokeLinejoin="round"
         strokeWidth={1.8}
         d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+      />
+    ),
+  },
+  {
+    id: "applications",
+    label: "My Applications",
+    icon: (
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.8}
+        d="M7 3h7l5 5v13H7V3zm7 0v5h5M10 13h6m-6 4h6"
       />
     ),
   },
@@ -421,10 +434,16 @@ export default function MainApp({ user, onLogout }: MainAppProps) {
       <main className="flex-1 pt-14 lg:pl-56 pb-safe">
         <div className="min-h-[calc(100vh-3.5rem)]">
           {page === "home" && <HomePage user={user} setPage={goTo} />}
-          {page === "dashboard" && <DashboardPage />}
+          {page === "dashboard" && (
+            <DashboardPage
+              email={user.email}
+              onApplications={() => goTo("applications")}
+            />
+          )}
+          {page === "applications" && <ApplicationsPage email={user.email} />}
           {page === "announcements" && <AnnouncementsPage user={user} />}
-          {page === "programs" && <ProgramsPage setPage={goTo} />}
-          {page === "apply" && <ApplyPage />}
+          {page === "programs" && <ProgramsPage setPage={goTo} user={user} />}
+          {page === "apply" && <ApplyPage user={user} />}
           {page === "profile" && <ProfilePage user={user} />}
           {page === "admin" && user.isAdmin && <AdminPage />}
         </div>

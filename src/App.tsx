@@ -18,6 +18,7 @@ export type AppUser = {
 export type AppPage =
   | "home"
   | "dashboard"
+  | "applications"
   | "announcements"
   | "programs"
   | "apply"

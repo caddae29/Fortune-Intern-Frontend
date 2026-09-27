@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ApplyFormModal from "../components/ApplyFormModal";
-import type { AppPage } from "../App";
+import type { AppPage, AppUser } from "../App";
 
 const jobs = [
   {
@@ -309,8 +309,10 @@ const types = ["All", "Technology", "Finance", "Marketing", "Media"];
 
 export default function ProgramsPage({
   setPage,
+  user,
 }: {
   setPage: (p: AppPage) => void;
+  user: AppUser;
 }) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
@@ -537,6 +539,7 @@ export default function ProgramsPage({
         <ApplyFormModal
           prefilledCompany={applyTarget.company}
           prefilledRole={applyTarget.role}
+          ownerEmail={user.email}
           onClose={() => setApplyTarget(null)}
         />
       )}

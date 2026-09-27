@@ -1,7 +1,8 @@
 import { useState } from "react";
+import type { AppUser } from "../App";
 import ApplyFormModal from "../components/ApplyFormModal";
 
-export default function ApplyPage() {
+export default function ApplyPage({ user }: { user: AppUser }) {
   const [showModal, setShowModal] = useState(false);
 
   return (
@@ -80,7 +81,12 @@ export default function ApplyPage() {
         Start Application Form →
       </button>
 
-      {showModal && <ApplyFormModal onClose={() => setShowModal(false)} />}
+      {showModal && (
+        <ApplyFormModal
+          ownerEmail={user.email}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 }

@@ -145,12 +145,14 @@ function loadPaystackInline() {
 interface ApplyFormModalProps {
   prefilledCompany?: string;
   prefilledRole?: string;
+  ownerEmail?: string;
   onClose: () => void;
 }
 
 export default function ApplyFormModal({
   prefilledCompany = "",
   prefilledRole = "",
+  ownerEmail = "",
   onClose,
 }: ApplyFormModalProps) {
   const [step, setStep] = useState<"form" | "payment" | "success">("form");
@@ -165,6 +167,7 @@ export default function ApplyFormModal({
     fullName: "",
     email: "",
     phone: "",
+    studentIndexNumber: "",
     university: "",
     programme: "",
     level: "",
@@ -177,6 +180,7 @@ export default function ApplyFormModal({
   });
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState("");
+  const [indexError, setIndexError] = useState("");
 
   useEffect(() => {
     if (form.company.length >= 2 && !prefilledCompany) {
@@ -204,6 +208,13 @@ export default function ApplyFormModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const indexNumber = form.studentIndexNumber.trim();
+    if (!/^\d{7,8}$/.test(indexNumber)) {
+      setIndexError(
+        "Enter a valid 7- or 8-digit student index number, for example 1234567.",
+      );
+      return;
+    }
     if (!resumeFile) {
       setFileError("Please upload one Resume or CV before continuing.");
       return;
@@ -214,14 +225,24 @@ export default function ApplyFormModal({
   const completeApplication = (reference: string) => {
     const application = saveApplication({
       opportunity: form.role || form.type,
+      ownerEmail: ownerEmail || form.email.trim().toLowerCase(),
       company: form.company,
       applicantName: form.fullName,
       applicantEmail: form.email,
+      studentIndexNumber: form.studentIndexNumber.trim(),
       applicationDate: new Date().toISOString(),
+      lastUpdated: new Date().toISOString(),
       status: "Submitted",
-      paymentStatus: "Paid",
+      paymentStatus: "Payment Successful",
       paymentReference: reference,
       resumeName: resumeFile?.name || "",
+      resumeType: resumeFile?.name.toLowerCase().endsWith(".docx")
+        ? "DOCX"
+        : resumeFile?.name.toLowerCase().endsWith(".doc")
+          ? "DOC"
+          : "PDF",
+      resumeUploadedAt: new Date().toISOString(),
+      applicationLetterAvailable: true,
     });
     setPaymentReference(application.reference);
     setStep("success");
@@ -340,6 +361,31 @@ export default function ApplyFormModal({
                     placeholder="+233 20 000 0000"
                     required
                   />
+                  <div>
+                    <label className="block text-xs font-semibold mb-1.5">
+                      Index Number *
+                    </label>
+                    <input
+                      value={form.studentIndexNumber}
+                      required
+                      inputMode="numeric"
+                      maxLength={8}
+                      onChange={(event) => {
+                        set(
+                          "studentIndexNumber",
+                          event.target.value.replace(/\s/g, ""),
+                        );
+                        setIndexError("");
+                      }}
+                      placeholder="Enter your student index number"
+                      className="w-full px-4 py-2.5 rounded-xl border border-border bg-muted/30 text-sm focus:outline-none focus:ring-2"
+                    />
+                    {indexError && (
+                      <p className="text-xs text-red-600 mt-1.5" role="alert">
+                        {indexError}
+                      </p>
+                    )}
+                  </div>
                   <div>
                     <label className="block text-xs font-semibold mb-1.5">
                       Level *
@@ -772,15 +818,21 @@ export default function ApplyFormModal({
               onClick={() =>
                 downloadApplicationLetter({
                   reference: paymentReference,
+                  ownerEmail: ownerEmail || form.email.trim().toLowerCase(),
                   opportunity: form.role || form.type,
                   company: form.company,
                   applicantName: form.fullName,
                   applicantEmail: form.email,
+                  studentIndexNumber: form.studentIndexNumber.trim(),
                   applicationDate: new Date().toISOString(),
+                  lastUpdated: new Date().toISOString(),
                   status: "Submitted",
-                  paymentStatus: "Paid",
+                  paymentStatus: "Payment Successful",
                   paymentReference,
                   resumeName: resumeFile?.name || "",
+                  resumeType: "Resume / CV",
+                  resumeUploadedAt: new Date().toISOString(),
+                  applicationLetterAvailable: true,
                 })
               }
               className="w-full py-3 rounded-xl bg-accent text-accent-foreground font-bold hover:opacity-90 transition-opacity mb-3"
