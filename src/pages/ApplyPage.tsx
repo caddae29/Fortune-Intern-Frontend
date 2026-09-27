@@ -1,9 +1,27 @@
 import { useState } from "react";
 import type { AppUser } from "../App";
 import ApplyFormModal from "../components/ApplyFormModal";
+import ApplicationsPage from "./ApplicationsPage";
 
 export default function ApplyPage({ user }: { user: AppUser }) {
   const [showModal, setShowModal] = useState(false);
+  const [section, setSection] = useState<"apply" | "applications">("apply");
+
+  if (section === "applications") {
+    return (
+      <div>
+        <div className="px-4 pt-4 lg:px-6 lg:pt-6 max-w-6xl mx-auto">
+          <button
+            onClick={() => setSection("apply")}
+            className="text-sm font-semibold text-primary hover:underline"
+          >
+            ← Apply for an Internship
+          </button>
+        </div>
+        <ApplicationsPage email={user.email} />
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 lg:p-6 max-w-2xl mx-auto">
@@ -17,6 +35,27 @@ export default function ApplyPage({ user }: { user: AppUser }) {
         <p className="text-sm text-muted-foreground">
           Fill out one form — we'll contact the company on your behalf.
         </p>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-3 mb-6">
+        <button
+          onClick={() => setSection("apply")}
+          className="text-left bg-primary text-white rounded-2xl p-5 shadow-sm"
+        >
+          <p className="font-semibold text-sm">Apply for an Internship</p>
+          <p className="text-xs text-white/70 mt-1">
+            Complete a new application and pay securely.
+          </p>
+        </button>
+        <button
+          onClick={() => setSection("applications")}
+          className="text-left bg-white border border-border rounded-2xl p-5 shadow-sm hover:bg-secondary"
+        >
+          <p className="font-semibold text-sm text-primary">My Applications</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Track your submitted applications and status.
+          </p>
+        </button>
       </div>
 
       {/* How it works */}
