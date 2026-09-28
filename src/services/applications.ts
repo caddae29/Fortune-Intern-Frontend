@@ -27,6 +27,7 @@ export interface ApplicationRecord {
   resumeType: string;
   resumeUploadedAt: string;
   applicationLetterAvailable: boolean;
+  details?: Record<string, unknown>;
 }
 
 const storageKey = "fortune-intern-applications";

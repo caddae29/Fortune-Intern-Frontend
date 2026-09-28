@@ -124,6 +124,8 @@ export default function ApplyPage({ user }: { user: AppUser }) {
         <ApplyFormModal
           ownerEmail={user.email}
           onClose={() => setShowModal(false)}
+          onViewApplications={() => setSection("applications")}
+          onBackDashboard={() => setShowModal(false)}
         />
       )}
     </div>

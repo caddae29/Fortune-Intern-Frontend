@@ -615,7 +615,7 @@ export default function LandingPage({ onStudentPortal }: LandingPageProps) {
       </main>
 
       <footer className="bg-footer text-white">
-        <div className="landing-container py-12 grid sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10">
+        <div className="landing-container py-12 grid sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr] gap-10">
           <div>
             <div className="flex items-center gap-3">
               <img
@@ -653,11 +653,48 @@ export default function LandingPage({ onStudentPortal }: LandingPageProps) {
                 "Terms of Service",
               ]}
             />
-            <div className="flex gap-4 mt-6 text-xs text-white/55">
-              <button>LinkedIn</button>
-              <button>Instagram</button>
-              <button>X</button>
+          </div>
+          <div>
+            <p className="text-sm font-bold">Follow Us</p>
+            <div className="flex items-center gap-3 mt-4">
+              <a
+                href="https://www.linkedin.com/company/fortune-intern-network/"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Follow Fortune Intern Network on LinkedIn"
+                className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white/70 hover:bg-emerald-500 hover:text-white transition-colors"
+              >
+                <Icon name="linkedin" className="w-5 h-5" />
+              </a>
+              <a
+                href="https://whatsapp.com/channel/0029Val97zy1yT2BGkOZi511"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Follow Fortune Intern Network on WhatsApp"
+                className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white/70 hover:bg-emerald-500 hover:text-white transition-colors"
+              >
+                <Icon name="whatsapp" className="w-5 h-5" />
+              </a>
+              <a
+                href="https://x.com/fortune_intern1"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Follow Fortune Intern Network on X"
+                className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white/70 hover:bg-emerald-500 hover:text-white transition-colors"
+              >
+                <Icon name="x" className="w-5 h-5" />
+              </a>
             </div>
+          </div>
+          <div>
+            <p className="text-sm font-bold">Customer Service</p>
+            <a
+              href="tel:0200313672"
+              aria-label="Call Fortune Intern Network Customer Service"
+              className="inline-block text-sm text-white/70 mt-4 hover:text-white transition-colors"
+            >
+              0200313672
+            </a>
           </div>
         </div>
         <div className="border-t border-white/10">
@@ -889,6 +926,30 @@ function Icon({ name, className }: { name: string; className: string }) {
         strokeLinejoin="round"
         strokeWidth={1.8}
         d="M6 4a2 2 0 012-2h8a2 2 0 012 2v18l-6-4-6 4V4z"
+      />
+    ),
+    linkedin: (
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.8}
+        d="M6 9v9m0-13v.01M10 18v-5a3 3 0 016 0v5m-6-5a3 3 0 016 0m0 0v5M3 3h18v18H3V3z"
+      />
+    ),
+    whatsapp: (
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.8}
+        d="M20 11.5a8 8 0 01-11.8 7L4 20l1.5-4.1A8 8 0 1120 11.5zm-5.2 2.2c-.2.5-.8.8-1.3.6-2.2-.8-3.7-2.1-4.6-4.2-.2-.5 0-1.1.5-1.4l.6-.3.8 1.4-.5.5c.5.9 1.1 1.5 2 2l.5-.5 1.5.7.5.6z"
+      />
+    ),
+    x: (
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.8}
+        d="M5 4l14 16M19 4L5 20"
       />
     ),
   };

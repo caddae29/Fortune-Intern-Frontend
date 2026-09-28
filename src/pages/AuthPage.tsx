@@ -28,6 +28,7 @@ interface AuthPageProps {
   showOTP: boolean;
   onOTPVerified: () => void;
   pendingEmail: string;
+  onForgotPassword?: () => void;
 }
 
 export default function AuthPage({
@@ -38,6 +39,7 @@ export default function AuthPage({
   showOTP,
   onOTPVerified,
   pendingEmail,
+  onForgotPassword,
 }: AuthPageProps) {
   const [mode, setMode] = useState<"login" | "register">(initialMode);
   const [form, setForm] = useState({
@@ -283,7 +285,11 @@ export default function AuthPage({
                   </label>
                   <button
                     type="button"
-                    onClick={() => setRecoveryOpen(true)}
+                    onClick={() =>
+                      onForgotPassword
+                        ? onForgotPassword()
+                        : setRecoveryOpen(true)
+                    }
                     className="text-xs font-semibold text-primary hover:underline"
                   >
                     Forgot password?
