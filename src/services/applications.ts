@@ -15,6 +15,9 @@ export interface ApplicationRecord {
   ownerEmail: string;
   opportunity: string;
   company: string;
+  companyAddress?: string;
+  suggestedCompany?: string;
+  gender?: string;
   applicantName: string;
   applicantEmail: string;
   studentIndexNumber: string;

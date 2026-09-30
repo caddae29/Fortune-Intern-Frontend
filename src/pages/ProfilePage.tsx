@@ -1,8 +1,51 @@
+import { useState } from "react";
 import type { AppUser } from "../App";
 
 const skills = ["React", "Python", "JavaScript", "SQL", "Figma", "Node.js"];
 
 export default function ProfilePage({ user }: { user: AppUser }) {
+  const [editing, setEditing] = useState(false);
+  const [profile, setProfile] = useState({
+    name: user.name,
+    username: user.email.split("@")[0],
+    school: user.school,
+    major: user.major,
+  });
+  const [draft, setDraft] = useState(profile);
+  const [profileError, setProfileError] = useState("");
+  const updateDraft = (key: keyof typeof draft, value: string) =>
+    setDraft((current) => ({ ...current, [key]: value }));
+  const handleEditProfile = () => {
+    setDraft(profile);
+    setProfileError("");
+    setEditing(true);
+  };
+  const closeEditor = () => {
+    setDraft(profile);
+    setProfileError("");
+    setEditing(false);
+  };
+  const saveProfile = () => {
+    if (
+      !draft.name.trim() ||
+      !draft.username.trim() ||
+      !draft.school.trim() ||
+      !draft.major.trim()
+    ) {
+      setProfileError(
+        "Profile name, username, university, and programme are required.",
+      );
+      return;
+    }
+    setProfile({
+      name: draft.name.trim(),
+      username: draft.username.trim(),
+      school: draft.school.trim(),
+      major: draft.major.trim(),
+    });
+    setEditing(false);
+  };
+
   return (
     <div className="p-4 lg:p-6 max-w-3xl mx-auto">
       {/* Header */}
@@ -30,14 +73,20 @@ export default function ProfilePage({ user }: { user: AppUser }) {
               className="text-xl font-bold text-white"
               style={{ fontFamily: "Inter, sans-serif" }}
             >
-              {user.name}
+              {draft.name}
             </h1>
             <p className="text-white/60 text-sm">
-              {user.school} · {user.major}
+              {draft.school} · {draft.major}
             </p>
-            <p className="text-white/40 text-xs mt-0.5">{user.email}</p>
+            <p className="text-white/40 text-xs mt-0.5">
+              @{draft.username} · {user.email}
+            </p>
           </div>
-          <button className="px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-xs font-semibold hover:bg-white/20 transition-colors">
+          <button
+            type="button"
+            onClick={handleEditProfile}
+            className="px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-xs font-semibold hover:bg-white/20 transition-colors"
+          >
             Edit Profile
           </button>
         </div>
@@ -61,6 +110,71 @@ export default function ProfilePage({ user }: { user: AppUser }) {
           ))}
         </div>
       </div>
+
+      {editing && (
+        <div
+          className="fixed inset-0 z-50 bg-black/55 backdrop-blur-sm p-4 flex items-center justify-center"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="edit-profile-title"
+        >
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 id="edit-profile-title" className="font-semibold text-lg">
+                Edit Profile
+              </h2>
+              <button
+                type="button"
+                onClick={closeEditor}
+                className="w-9 h-9 rounded-xl hover:bg-secondary text-lg"
+                aria-label="Close edit profile dialog"
+              >
+                ×
+              </button>
+            </div>
+            <div className="space-y-4">
+              {(
+                [
+                  ["name", "Profile Name"],
+                  ["username", "Username"],
+                  ["school", "University"],
+                  ["major", "Programme / Major"],
+                ] as const
+              ).map(([key, label]) => (
+                <label key={key} className="block text-xs font-semibold">
+                  {label}
+                  <input
+                    value={draft[key]}
+                    onChange={(event) => updateDraft(key, event.target.value)}
+                    className="mt-1.5 w-full px-3 py-2.5 rounded-xl border border-border bg-muted/30 text-sm focus:outline-none focus:ring-2"
+                  />
+                </label>
+              ))}
+            </div>
+            {profileError && (
+              <p className="text-xs text-red-600 mt-4" role="alert">
+                {profileError}
+              </p>
+            )}
+            <div className="flex gap-3 mt-6">
+              <button
+                type="button"
+                onClick={closeEditor}
+                className="flex-1 py-2.5 rounded-xl border border-border text-sm font-semibold hover:bg-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={saveProfile}
+                className="flex-1 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:opacity-90"
+              >
+                Save Profile
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid lg:grid-cols-3 gap-5">
         <div className="lg:col-span-2 space-y-5">
@@ -265,29 +379,6 @@ export default function ProfilePage({ user }: { user: AppUser }) {
                 + Upload document
               </button>
             </div>
-          </div>
-
-          {/* Subscription */}
-          <div
-            className="rounded-2xl p-5 shadow-sm text-white"
-            style={{ background: "linear-gradient(135deg, #2D3561, #3d4a8a)" }}
-          >
-            <p className="text-xs font-semibold opacity-60 mb-1">
-              CURRENT PLAN
-            </p>
-            <p className="font-bold text-base mb-2">Free Tier</p>
-            <p className="text-xs opacity-70 mb-4">
-              Upgrade for AI letter writing, automated emails & more
-            </p>
-            <button
-              className="w-full py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-opacity"
-              style={{
-                background: "linear-gradient(135deg, #F5B731, #d9a020)",
-                color: "#1a1f3a",
-              }}
-            >
-              Upgrade to Pro
-            </button>
           </div>
         </div>
       </div>

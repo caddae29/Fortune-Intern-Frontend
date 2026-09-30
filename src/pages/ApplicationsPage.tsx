@@ -46,7 +46,17 @@ export default function ApplicationsPage({ email }: { email: string }) {
   const [sort, setSort] = useState<"recent" | "oldest">("recent");
   const [selected, setSelected] = useState<ApplicationRecord | null>(null);
 
-  const refresh = () => setApplications(loadApplications(email));
+  const refresh = () => {
+    const latest = loadApplications(email);
+    setApplications(latest);
+    setSelected((current) =>
+      current
+        ? latest.find(
+            (application) => application.reference === current.reference,
+          ) || null
+        : null,
+    );
+  };
   useEffect(() => {
     refresh();
     window.addEventListener("storage", refresh);
@@ -100,12 +110,6 @@ export default function ApplicationsPage({ email }: { email: string }) {
             Track submitted applications, payment, and letter availability.
           </p>
         </div>
-        <button
-          onClick={refresh}
-          className="px-4 py-2.5 rounded-xl border border-border bg-white text-sm font-semibold hover:bg-secondary"
-        >
-          Refresh applications
-        </button>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
