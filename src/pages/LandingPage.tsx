@@ -626,7 +626,7 @@ export default function LandingPage({ onStudentPortal }: LandingPageProps) {
               <div>
                 <p className="font-display text-xl">Fortune Intern Network</p>
                 <p className="text-[10px] tracking-widest uppercase text-emerald-300">
-                  Connect. Apply. Grow.
+                  Bridging Dreams and Careers
                 </p>
               </div>
             </div>

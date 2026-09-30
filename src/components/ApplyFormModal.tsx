@@ -20,29 +20,39 @@ const universities = [
   "Other",
 ];
 const partnerCompanies = [
-  "Flutterwave",
-  "Access Bank Ghana",
-  "Andela",
-  "MTN Ghana",
-  "Vodafone Ghana",
-  "GCB Bank",
-  "Hubtel",
-  "Farmerline",
+  "AngloGold Ashanti",
+  "AT Ghana",
+  "Coca-Cola Bottling Company of Ghana",
+  "Consar Limited",
+  "Consolidated Bank Ghana (CBG)",
   "Ecobank Ghana",
-  "Stanbic Bank Ghana",
-  "Absa Ghana",
+  "Enterprise Group",
+  "Ernest Chemists Limited",
   "Fidelity Bank Ghana",
-  "AirtelTigo Ghana",
-  "Ghana Revenue Authority",
-  "Agricultural Development Bank",
-  "TechGhana",
-  "Jumia Ghana",
-  "Zipline Ghana",
-  "mPharma",
-  "Zooto",
-  "Paystack Ghana",
-  "Interswitch Ghana",
-  "Omni Bank",
+  "GCB Bank PLC",
+  "Ghana Grid Company (GRIDCo)",
+  "GLICO General Insurance",
+  "Guinness Ghana Breweries",
+  "Hollard Insurance Ghana",
+  "Joshob Construction Company",
+  "Komfo Anokye Teaching Hospital",
+  "Korle-Bu Teaching Hospital",
+  "McDan Group",
+  "Micheletti & Co.",
+  "MTN Ghana",
+  "Nestlé Ghana",
+  "Phoenix Insurance Company",
+  "RNAQ Holdings",
+  "SIC Insurance PLC",
+  "Stanbic Bank Ghana",
+  "Star Assurance Company",
+  "Telecel Ghana",
+  "Tema Oil Refinery (TOR)",
+  "Tobinco Pharmaceuticals",
+  "Tullow Oil Ghana",
+  "Unilever Ghana",
+  "UTV (United Television)",
+  "Vanguard Assurance Company",
 ];
 const years = [
   "Level 100",
@@ -363,7 +373,7 @@ export default function ApplyFormModal({
             />
             <Select
               label="Suggested Company for Internship"
-              instruction="Select your preferred company placement from the partner list."
+              instruction="Select the company you would like to be placed at from the list of suggested companies."
               value={form.suggestedCompany}
               onChange={(v) => set("suggestedCompany", v)}
               options={partnerCompanies}

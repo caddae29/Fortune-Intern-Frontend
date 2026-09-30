@@ -416,10 +416,17 @@ export default function MainApp({ user, onLogout }: MainAppProps) {
               onApplications={() => goTo("applications")}
             />
           )}
-          {page === "applications" && <ApplicationsPage email={user.email} />}
+          {page === "applications" && (
+            <ApplicationsPage
+              email={user.email}
+              onBrowse={() => goTo("programs")}
+            />
+          )}
           {page === "announcements" && <AnnouncementsPage user={user} />}
           {page === "programs" && <ProgramsPage setPage={goTo} user={user} />}
-          {page === "apply" && <ApplyPage user={user} />}
+          {page === "apply" && (
+            <ApplyPage user={user} onBrowse={() => goTo("programs")} />
+          )}
           {page === "profile" && <ProfilePage user={user} />}
           {page === "admin" && user.isAdmin && <AdminPage />}
         </div>
