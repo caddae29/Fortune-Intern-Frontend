@@ -3,7 +3,13 @@ import type { AppUser } from "../App";
 import ApplyFormModal from "../components/ApplyFormModal";
 import ApplicationsPage from "./ApplicationsPage";
 
-export default function ApplyPage({ user }: { user: AppUser }) {
+export default function ApplyPage({
+  user,
+  onBrowse,
+}: {
+  user: AppUser;
+  onBrowse?: () => void;
+}) {
   const [showModal, setShowModal] = useState(false);
   const [section, setSection] = useState<"apply" | "applications">("apply");
 
@@ -18,7 +24,7 @@ export default function ApplyPage({ user }: { user: AppUser }) {
             ← Apply for an Internship
           </button>
         </div>
-        <ApplicationsPage email={user.email} />
+        <ApplicationsPage email={user.email} onBrowse={onBrowse} />
       </div>
     );
   }

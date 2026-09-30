@@ -39,7 +39,13 @@ function stageIndex(application: ApplicationRecord) {
   return 4;
 }
 
-export default function ApplicationsPage({ email }: { email: string }) {
+export default function ApplicationsPage({
+  email,
+  onBrowse,
+}: {
+  email: string;
+  onBrowse?: () => void;
+}) {
   const [applications, setApplications] = useState<ApplicationRecord[]>([]);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<ApplicationStatus | "All">("All");
@@ -128,7 +134,7 @@ export default function ApplicationsPage({ email }: { email: string }) {
       </div>
 
       {applications.length === 0 ? (
-        <EmptyState />
+        <EmptyState onBrowse={onBrowse} />
       ) : (
         <>
           <div className="bg-white border border-border rounded-2xl p-4 mb-4 grid md:grid-cols-[1fr_auto_auto] gap-3">
@@ -432,7 +438,7 @@ function Info({
   );
 }
 
-function EmptyState() {
+function EmptyState({ onBrowse }: { onBrowse?: () => void }) {
   return (
     <div className="bg-white border border-border rounded-2xl p-10 text-center shadow-sm">
       <div className="w-14 h-14 rounded-2xl bg-secondary text-primary mx-auto flex items-center justify-center text-2xl">
@@ -443,12 +449,13 @@ function EmptyState() {
         Start exploring internship opportunities and submit your first
         application.
       </p>
-      <a
-        href="#"
+      <button
+        type="button"
+        onClick={onBrowse}
         className="inline-flex mt-5 px-5 py-3 rounded-xl bg-primary text-white text-sm font-semibold"
       >
         Browse Opportunities
-      </a>
+      </button>
     </div>
   );
 }
