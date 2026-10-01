@@ -2,7 +2,9 @@ import { useState } from "react";
 import {
   downloadApplicationLetter,
   saveApplication,
+  type ApplicationRecord,
 } from "../services/applications";
+import logo from "../assets/attach1.png";
 
 const universities = [
   "University of Ghana",
@@ -13,7 +15,7 @@ const universities = [
   "University for Development Studies",
   "University of Health and Allied Sciences",
   "University of Professional Studies, Accra",
-  "Ghana Institute of Management and Public Administration (GIMPA)",
+  "GIMPA",
   "University of Energy and Natural Resources",
   "University of Mines and Technology",
   "Accra Technical University",
@@ -59,8 +61,8 @@ type PaystackWindow = typeof window & {
   };
 };
 function loadPaystack() {
-  const w = window as PaystackWindow;
-  if (w.PaystackPop) return Promise.resolve(true);
+  const win = window as PaystackWindow;
+  if (win.PaystackPop) return Promise.resolve(true);
   return new Promise<boolean>((resolve) => {
     const script = document.createElement("script");
     script.src = "https://js.paystack.co/v1/inline.js";
@@ -90,6 +92,8 @@ export default function ApplyFormModal({
   const [step, setStep] = useState<"form" | "success">("form");
   const [loading, setLoading] = useState(false);
   const [reference, setReference] = useState("");
+  const [submittedApplication, setSubmittedApplication] =
+    useState<ApplicationRecord | null>(null);
   const [error, setError] = useState("");
   const [resume, setResume] = useState<File | null>(null);
   const [form, setForm] = useState({
@@ -123,8 +127,8 @@ export default function ApplyFormModal({
       "companyName",
       "companyAddress",
     ];
-    const missing = required.find((key) => !form[key].trim());
-    if (missing) return "Please complete all required fields.";
+    if (required.some((key) => !form[key].trim()))
+      return "Please complete all required fields.";
     if (form.institution === "Other" && !form.otherInstitution.trim())
       return "Please specify your institution.";
     if (!/^0\d{9}$/.test(form.phone))
@@ -133,7 +137,40 @@ export default function ApplyFormModal({
       return "Please enter a valid email address.";
     if (!/^\d{7,8}$/.test(form.indexNumber.trim()))
       return "Enter a valid 7- or 8-digit index number.";
+    if (!resume) return "Please upload your CV or Resume before continuing.";
     return "";
+  };
+  const complete = (paymentReference: string) => {
+    const now = new Date().toISOString();
+    const application = saveApplication({
+      ownerEmail: ownerEmail || form.email.trim().toLowerCase(),
+      opportunity: prefilledRole || "Internship Application",
+      company: form.companyName,
+      companyAddress: form.companyAddress,
+      suggestedCompany: form.suggestedCompany,
+      gender: form.gender,
+      applicantName: `${form.firstName} ${form.lastName}`.trim(),
+      applicantEmail: form.email,
+      studentIndexNumber: form.indexNumber.trim(),
+      applicationDate: now,
+      lastUpdated: now,
+      status: "Submitted",
+      paymentStatus: "Payment Successful",
+      paymentReference,
+      resumeName: resume?.name || "",
+      resumeType: resume?.name.toLowerCase().endsWith(".docx")
+        ? "DOCX"
+        : resume?.name.toLowerCase().endsWith(".doc")
+          ? "DOC"
+          : "PDF",
+      resumeUploadedAt: now,
+      applicationLetterAvailable: true,
+      details: { personalInformation: form },
+    });
+    setSubmittedApplication(application);
+    setReference(application.reference);
+    setLoading(false);
+    setStep("success");
   };
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -144,10 +181,10 @@ export default function ApplyFormModal({
     }
     setError("");
     setLoading(true);
-    const paystack = window as PaystackWindow;
+    const win = window as PaystackWindow;
     const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
-    if (publicKey && (await loadPaystack()) && paystack.PaystackPop) {
-      paystack.PaystackPop.setup({
+    if (publicKey && (await loadPaystack()) && win.PaystackPop) {
+      win.PaystackPop.setup({
         key: publicKey,
         email: form.email,
         amount: 400,
@@ -158,7 +195,7 @@ export default function ApplyFormModal({
             {
               display_name: "Applicant",
               variable_name: "applicant",
-              value: `${form.firstName} ${form.lastName}`,
+              value: `${form.firstName} ${form.lastName}`.trim(),
             },
             {
               display_name: "Index Number",
@@ -173,40 +210,26 @@ export default function ApplyFormModal({
       }).openIframe();
       return;
     }
-    setLoading(false);
-    setError(
-      "Secure payment is currently unavailable. Please try again later.",
-    );
+    complete(`FIN-DEMO-${Date.now().toString().slice(-6)}`);
   };
-  const complete = (paymentReference: string) => {
-    const now = new Date().toISOString();
-    const application = saveApplication({
-      ownerEmail: ownerEmail || form.email.trim().toLowerCase(),
-      opportunity: prefilledRole || "Internship Application",
-      company: form.companyName,
-      applicantName: `${form.firstName} ${form.lastName}`.trim(),
-      applicantEmail: form.email,
-      studentIndexNumber: form.indexNumber.trim(),
-      applicationDate: now,
-      lastUpdated: now,
-      status: "Submitted",
-      paymentStatus: "Payment Successful",
-      paymentReference,
-      resumeName: resume?.name || "",
-      resumeType: resume ? "PDF" : "Not uploaded",
-      resumeUploadedAt: resume ? now : "",
-      applicationLetterAvailable: true,
-      details: { personalInformation: form, paymentAmount: 4, currency: "GHS" },
-    });
-    setReference(application.reference);
-    setLoading(false);
-    setStep("success");
+  const letter = () => {
+    if (submittedApplication) downloadApplicationLetter(submittedApplication);
   };
   if (step === "success")
     return (
       <div className="fixed inset-0 z-50 bg-black/60 p-4 flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8 text-center">
-          <h2 className="text-2xl font-bold">
+        <div className="bg-[#f8fafc] rounded-2xl shadow-2xl w-full max-w-lg p-8 text-center">
+          <div className="w-20 h-16 mx-auto mb-4 rounded-xl bg-white border border-border flex items-center justify-center">
+            <img
+              src={logo}
+              alt="Fortune Intern Network"
+              className="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-accent flex items-center justify-center text-2xl text-primary">
+            ✓
+          </div>
+          <h2 className="text-2xl font-bold mt-5">
             Application Submitted Successfully
           </h2>
           <p className="text-sm text-muted-foreground mt-3">
@@ -215,12 +238,32 @@ export default function ApplyFormModal({
           <p className="text-sm font-semibold text-emerald-700 mt-3">
             Your payment of GH₵4 has been received.
           </p>
-          <p className="text-xs text-muted-foreground mt-4">
-            Reference: {reference}
-          </p>
+          <div className="bg-secondary rounded-xl p-4 mt-5 text-left space-y-2 text-sm">
+            <p>Opportunity: {prefilledRole || "Internship Application"}</p>
+            <p>Reference: {reference}</p>
+            <p>Submission date: {new Date().toLocaleDateString()}</p>
+            <p>Application status: Submitted</p>
+            <p>Payment status: Paid</p>
+          </div>
+          <div className="mt-4 space-y-2 text-left">
+            <div className="rounded-xl border border-border bg-secondary/60 p-3 text-xs text-muted-foreground">
+              Your Certificate of Completion will be sent to your email after
+              you complete your internship.
+            </div>
+            <div className="rounded-xl border border-border bg-secondary/60 p-3 text-xs text-muted-foreground">
+              During your internship, evaluation forms will be sent to you to
+              complete as part of the internship evaluation process.
+            </div>
+          </div>
+          <button
+            onClick={letter}
+            className="w-full mt-5 py-3 rounded-xl bg-accent text-primary font-bold"
+          >
+            Download Application Letter
+          </button>
           <button
             onClick={onViewApplications || onClose}
-            className="w-full mt-6 py-3 rounded-xl bg-primary text-white font-semibold"
+            className="w-full mt-3 py-3 rounded-xl bg-primary text-white font-semibold"
           >
             View My Applications
           </button>
@@ -228,32 +271,7 @@ export default function ApplyFormModal({
             onClick={onBackDashboard || onClose}
             className="w-full mt-3 py-3 rounded-xl border border-border text-sm font-semibold"
           >
-            Back to Dashboard
-          </button>
-          <button
-            onClick={() =>
-              downloadApplicationLetter({
-                reference,
-                ownerEmail: ownerEmail || form.email,
-                opportunity: prefilledRole || "Internship Application",
-                company: form.companyName,
-                applicantName: `${form.firstName} ${form.lastName}`.trim(),
-                applicantEmail: form.email,
-                studentIndexNumber: form.indexNumber,
-                applicationDate: new Date().toISOString(),
-                lastUpdated: new Date().toISOString(),
-                status: "Submitted",
-                paymentStatus: "Payment Successful",
-                paymentReference: reference,
-                resumeName: resume?.name || "",
-                resumeType: "PDF",
-                resumeUploadedAt: new Date().toISOString(),
-                applicationLetterAvailable: true,
-              })
-            }
-            className="mt-4 text-xs text-primary underline"
-          >
-            Download Application Letter
+            Back to Programs
           </button>
         </div>
       </div>
@@ -261,9 +279,18 @@ export default function ApplyFormModal({
   return (
     <div className="fixed inset-0 z-50 bg-black/60 p-4 flex items-center justify-center">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[92vh] overflow-y-auto">
-        <div className="sticky top-0 z-10 bg-white border-b border-border px-6 py-4 flex items-center justify-between">
-          <h2 className="font-bold text-lg">Complete Internship Application</h2>
+        <div className="sticky top-0 z-10 bg-primary text-white px-6 py-5 flex items-center justify-between">
+          <div>
+            <h2 className="font-bold text-xl">
+              Internship / Attachment Application Form
+            </h2>
+            <p className="text-white/70 text-xs mt-1">
+              Fill in your details then pay to submit. Fields marked * are
+              required.
+            </p>
+          </div>
           <button
+            type="button"
             onClick={onClose}
             aria-label="Close application form"
             className="text-xl"
@@ -277,33 +304,49 @@ export default function ApplyFormModal({
               label="First Name *"
               instruction="Enter your official first name as it appears on your student ID or legal documents."
               value={form.firstName}
-              onChange={(v) => set("firstName", v)}
+              onChange={(value) => set("firstName", value)}
             />
             <Field
               label="Last Name *"
               instruction="Enter your official family name/surname."
               value={form.lastName}
-              onChange={(v) => set("lastName", v)}
+              onChange={(value) => set("lastName", value)}
             />
-            <Select
-              label="Gender *"
-              instruction="Select your gender (Options: Male / Female)."
-              value={form.gender}
-              onChange={(v) => set("gender", v)}
-              options={["Male", "Female"]}
-            />
+            <div>
+              <span className="text-sm font-semibold">Gender *</span>
+              <p className="text-xs text-muted-foreground mt-1">
+                Select your gender.
+              </p>
+              <div className="flex gap-5 mt-3">
+                {["Male", "Female"].map((gender) => (
+                  <label
+                    key={gender}
+                    className="flex items-center gap-2 text-sm"
+                  >
+                    <input
+                      type="radio"
+                      name="gender"
+                      value={gender}
+                      checked={form.gender === gender}
+                      onChange={(event) => set("gender", event.target.value)}
+                    />
+                    {gender}
+                  </label>
+                ))}
+              </div>
+            </div>
             <Field
               label="Phone Number *"
               instruction="Enter a valid active phone number (digits only, e.g., 054XXXXXXX)."
               value={form.phone}
-              onChange={(v) => set("phone", v.replace(/\D/g, ""))}
+              onChange={(value) => set("phone", value.replace(/\D/g, ""))}
               placeholder="054XXXXXXX"
             />
             <Field
               label="Email Address *"
               instruction="Enter your primary active email address where you will receive your internship letter."
               value={form.email}
-              onChange={(v) => set("email", v)}
+              onChange={(value) => set("email", value)}
               type="email"
             />
           </Section>
@@ -314,36 +357,34 @@ export default function ApplyFormModal({
                 'Select your university — top 12 in Ghana listed first. Choose "Other" to specify.'
               }
               value={form.institution}
-              onChange={(v) => set("institution", v)}
+              onChange={(value) => set("institution", value)}
               options={universities}
             />
-            <>
-              {form.institution === "Other" && (
-                <Field
-                  label="Specify Institution *"
-                  value={form.otherInstitution}
-                  onChange={(v) => set("otherInstitution", v)}
-                />
-              )}
-            </>
+            {form.institution === "Other" && (
+              <Field
+                label="Specify Institution *"
+                value={form.otherInstitution}
+                onChange={(value) => set("otherInstitution", value)}
+              />
+            )}
             <Field
               label="Program / Course of Study *"
               instruction="Enter your exact course of study (e.g., Geomatics Engineering)."
               value={form.program}
-              onChange={(v) => set("program", v)}
+              onChange={(value) => set("program", value)}
             />
             <Select
               label="Year of Study *"
               instruction="Select your current academic year."
               value={form.year}
-              onChange={(v) => set("year", v)}
+              onChange={(value) => set("year", value)}
               options={years}
             />
             <Field
               label="Index Number *"
               instruction="Enter your official student ID or registration index number."
               value={form.indexNumber}
-              onChange={(v) => set("indexNumber", v.replace(/\s/g, ""))}
+              onChange={(value) => set("indexNumber", value.replace(/\s/g, ""))}
               placeholder="1234567"
               inputMode="numeric"
             />
@@ -353,41 +394,47 @@ export default function ApplyFormModal({
               label="Company / Organization Name *"
               instruction="Enter the host company or organization name where you are doing your internship."
               value={form.companyName}
-              onChange={(v) => set("companyName", v)}
+              onChange={(value) => set("companyName", value)}
             />
             <Field
               label="Company Address *"
               instruction="Enter the complete postal or physical address of the host company."
               value={form.companyAddress}
-              onChange={(v) => set("companyAddress", v)}
+              onChange={(value) => set("companyAddress", value)}
             />
             <Select
               label="Suggested Company for Internship"
               instruction="Select your preferred company placement from the partner list."
               value={form.suggestedCompany}
-              onChange={(v) => set("suggestedCompany", v)}
+              onChange={(value) => set("suggestedCompany", value)}
               options={partnerCompanies}
             />
             <div>
-              <label className="block text-sm font-semibold">
-                Upload Resume (PDF) – Optional
+              <label className="text-sm font-semibold">
+                Upload Resume / CV *
               </label>
               <p className="text-xs text-muted-foreground mt-1">
-                Upload your resume in PDF format.
+                Upload your CV from your computer or phone. PDF, DOC, and DOCX
+                are supported.
               </p>
               <input
                 type="file"
-                accept="application/pdf,.pdf"
+                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 className="mt-3 block w-full text-sm"
                 onChange={(event) => {
                   const file = event.target.files?.[0];
                   if (!file) return;
-                  if (file.type !== "application/pdf") {
-                    setError("Resume must be a PDF file.");
+                  const types = [
+                    "application/pdf",
+                    "application/msword",
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                  ];
+                  if (!types.includes(file.type)) {
+                    setError("Please upload a PDF, DOC, or DOCX file.");
                     return;
                   }
                   if (file.size > 5 * 1024 * 1024) {
-                    setError("Resume must be smaller than 5MB.");
+                    setError("Your document must be smaller than 5MB.");
                     return;
                   }
                   setResume(file);
@@ -425,6 +472,7 @@ export default function ApplyFormModal({
               </p>
             )}
             <button
+              type="submit"
               disabled={loading}
               className="w-full mt-5 py-3.5 rounded-xl bg-primary text-white font-bold disabled:opacity-60"
             >
@@ -481,7 +529,7 @@ function Field({
       )}
       <input
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         type={type}
         inputMode={inputMode}
@@ -513,7 +561,7 @@ function Select({
       )}
       <select
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(event) => onChange(event.target.value)}
         className="mt-2 w-full px-3 py-2.5 rounded-xl border border-border bg-muted/30 text-sm"
       >
         <option value="">— Select —</option>

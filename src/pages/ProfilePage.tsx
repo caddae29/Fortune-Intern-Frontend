@@ -84,8 +84,8 @@ export default function ProfilePage({ user }: { user: AppUser }) {
           </div>
           <button
             type="button"
-            onClick={handleEditProfile}
-            className="px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-xs font-semibold hover:bg-white/20 transition-colors"
+            onClick={() => handleEditProfile()}
+            className="relative z-10 cursor-pointer px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-xs font-semibold hover:bg-white/20 transition-colors"
           >
             Edit Profile
           </button>
@@ -113,7 +113,7 @@ export default function ProfilePage({ user }: { user: AppUser }) {
 
       {editing && (
         <div
-          className="fixed inset-0 z-50 bg-black/55 backdrop-blur-sm p-4 flex items-center justify-center"
+          className="fixed inset-0 z-[100] pointer-events-auto bg-black/55 backdrop-blur-sm p-4 flex items-center justify-center"
           role="dialog"
           aria-modal="true"
           aria-labelledby="edit-profile-title"
