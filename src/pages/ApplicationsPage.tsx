@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  downloadApplicationLetter,
+  printApplicationLetter,
   loadApplications,
   type ApplicationRecord,
   type ApplicationStatus,
@@ -389,10 +389,10 @@ function TrackingModal({
                     Application Letter Ready
                   </p>
                   <button
-                    onClick={() => downloadApplicationLetter(application)}
+                    onClick={() => printApplicationLetter(application)}
                     className="w-full py-3 rounded-xl bg-primary text-white text-sm font-semibold"
                   >
-                    Download Application Letter
+                    Print Application
                   </button>
                 </>
               ) : (

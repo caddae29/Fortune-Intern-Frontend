@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  downloadApplicationLetter,
+  printApplicationLetter,
   saveApplication,
   type ApplicationRecord,
 } from "../services/applications";
@@ -213,7 +213,7 @@ export default function ApplyFormModal({
     complete(`FIN-DEMO-${Date.now().toString().slice(-6)}`);
   };
   const letter = () => {
-    if (submittedApplication) downloadApplicationLetter(submittedApplication);
+    if (submittedApplication) printApplicationLetter(submittedApplication);
   };
   if (step === "success")
     return (
@@ -259,7 +259,7 @@ export default function ApplyFormModal({
             onClick={letter}
             className="w-full mt-5 py-3 rounded-xl bg-accent text-primary font-bold"
           >
-            Download Application Letter
+            Print Application
           </button>
           <button
             onClick={onViewApplications || onClose}

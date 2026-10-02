@@ -1,7 +1,8 @@
 {
-  "description": "Connect students with job opportunities and companies through automated application tracking, AI assistance, and seamless payment integration.",
+  "title": "Fortune Intern | Internship Opportunities for Students",
+  "description": "Fortune Intern connects students with internship opportunities and helps them discover, apply for, and track internships in one place.",
   "robots": {
-    "index": false
+    "index": true
   },
   "accessibility": {
     "addBypassLinks": false,

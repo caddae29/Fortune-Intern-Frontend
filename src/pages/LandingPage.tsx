@@ -615,7 +615,7 @@ export default function LandingPage({ onStudentPortal }: LandingPageProps) {
       </main>
 
       <footer className="bg-footer text-white">
-        <div className="landing-container py-12 grid sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10">
+        <div className="landing-container py-12 grid sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr] gap-10">
           <div>
             <div className="flex items-center gap-3">
               <img
@@ -653,11 +653,48 @@ export default function LandingPage({ onStudentPortal }: LandingPageProps) {
                 "Terms of Service",
               ]}
             />
-            <div className="flex gap-4 mt-6 text-xs text-white/55">
-              <button>LinkedIn</button>
-              <button>Instagram</button>
-              <button>X</button>
+          </div>
+          <div>
+            <p className="text-sm font-bold">Follow Us</p>
+            <div className="flex items-center gap-3 mt-4">
+              <a
+                href="https://www.linkedin.com/company/fortune-intern-network/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Fortune Intern on LinkedIn"
+                className="w-10 h-10 rounded-xl bg-white/10 text-white/70 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-colors"
+              >
+                <Icon name="linkedin" className="w-5 h-5" />
+              </a>
+              <a
+                href="https://whatsapp.com/channel/0029Val97zy1yT2BGkOZi511"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Fortune Intern WhatsApp Channel"
+                className="w-10 h-10 rounded-xl bg-white/10 text-white/70 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-colors"
+              >
+                <Icon name="whatsapp" className="w-5 h-5" />
+              </a>
+              <a
+                href="https://x.com/fortune_intern1"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Fortune Intern on X"
+                className="w-10 h-10 rounded-xl bg-white/10 text-white/70 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-colors"
+              >
+                <Icon name="x" className="w-5 h-5" />
+              </a>
             </div>
+          </div>
+          <div>
+            <p className="text-sm font-bold">Customer Service</p>
+            <a
+              href="tel:0200313672"
+              aria-label="Call Fortune Intern Customer Service"
+              className="inline-flex mt-4 text-sm text-white/70 hover:text-white transition-colors"
+            >
+              0200313672
+            </a>
           </div>
         </div>
         <div className="border-t border-white/10">
